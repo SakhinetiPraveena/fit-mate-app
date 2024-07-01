@@ -7,7 +7,11 @@ import {
     KeyboardAvoidingView,
     TextInput,
     Pressable,
+    Alert
   } from "react-native";
+
+  import axios from "axios";
+  import AsyncStorage from "@react-native-async-storage/async-storage";
   import React, { useState,useEffect } from "react";
   import { MaterialIcons } from "@expo/vector-icons";
   import { AntDesign } from "@expo/vector-icons";
@@ -17,6 +21,30 @@ import {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
+    const handleLogin = () => {
+      const user = {
+        email: email,
+        password: password,
+      };
+      axios.post("http://localhost:3000/login",user).then((response) => {
+          console.log(response);
+          const token = response.data.token;
+          AsyncStorage.setItem("auth",token);
+          Alert.alert(
+            "Login successful",
+            "You have been logged in Successfully"
+          );
+          router.replace("/(tabs)/profile")
+      }).catch((error) => {
+        Alert.alert(
+          "Error",
+          "Invalid username/password"
+        );
+        console.log("registration failed", error);
+      });
+    };
+
+
     return (
       <SafeAreaView
         style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
@@ -31,7 +59,7 @@ import {
           >
             <Image
               style={{ width: 250, height: 80, marginTop: 10,}}
-              source={require('/Users/sakprave/Desktop/my-app-2/pictures/logo.png')}
+              source={require('/Users/sakprave/Desktop/fit-mate-app/pictures/logo.png')}
             />
           </View>
           <Text
@@ -117,6 +145,7 @@ import {
             <View style={{ marginTop: 50 }} />
   
             <Pressable
+             onPress={handleLogin}
               style={{
                 width: 200,
                 backgroundColor: "#72A6DB",

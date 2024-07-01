@@ -20,7 +20,34 @@ import {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
-    
+    const handleRegister = () => {
+      const user = {
+        name: name,
+        email: email,
+        password: password,
+      };
+  
+      // send a POST  request to the backend API to register the user
+      axios
+        .post("http://localhost:3000/register", user)
+        .then((response) => {
+          console.log(response);
+          Alert.alert(
+            "Registration successful",
+            "You have been registered Successfully"
+          );
+          setName("");
+          setEmail("");
+          setPassword("");
+        })
+        .catch((error) => {
+          Alert.alert(
+            "Registration Error",
+            "An error occurred while registering"
+          );
+          console.log("registration failed", error);
+        });
+    };
     return (
       <SafeAreaView
         style={{ flex: 1, backgroundColor: "white", alignItems: "center" }}
@@ -35,7 +62,7 @@ import {
           >
             <Image
               style={{ width: 250, height: 80, marginTop: 10,}}
-              source={require('/Users/sakprave/Desktop/my-app-2/pictures/logo.png')}
+              source={require('/Users/sakprave/Desktop/fit-mate-app/pictures/logo.png')}
             />
           </View>
           <Text
@@ -152,6 +179,7 @@ import {
             <View style={{ marginTop: 50 }} />
   
             <Pressable
+              onPress={handleRegister}
               style={{
                 width: 200,
                 backgroundColor: "#72A6DB",
