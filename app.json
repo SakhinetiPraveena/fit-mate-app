@@ -2,6 +2,10 @@
   "expo": {
     "name": "my-app-2",
     "slug": "my-app-2",
-    "version": "1.0.0"
+    "version": "1.0.0",
+    "scheme": "your-app-scheme",
+    "plugins": [
+      "expo-router"
+    ]
   }
 }
