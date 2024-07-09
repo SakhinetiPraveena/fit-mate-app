@@ -18,45 +18,31 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ["male", "female", "other"],
   },
+  goal: {
+    type: String,
+    enum: ["Gain Muscle", "Lose Weight", "Stay Fit"],
+  },
+  height: {
+    type: String,
+  },
+  weight: {
+    type: String,
+  },
+  age: { 
+    type: String,
+  },
+  bio: {
+    type: String,
+  },
   verified: {
     type: Boolean,
     default: false,
   },
   verificationToken: String,
-  crushes: [
+  friends: [
     {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-    },
-  ],
-  recievedLikes: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  matches: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-    },
-  ],
-  profileImages: [
-    {
-      type: String,
-    },
-  ],
-  description: {
-    type: String,
-  },
-  turnOns: [
-    {
-      type: String, //Array of string for turn ons
-    },
-  ],
-  lookingFor: [
-    {
-      type: String, // Array of strings for what they are looking for
     },
   ],
 });

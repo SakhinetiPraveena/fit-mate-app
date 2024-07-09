@@ -15,7 +15,7 @@ import {
   import React, { useState,useEffect } from "react";
   import { MaterialIcons } from "@expo/vector-icons";
   import { AntDesign } from "@expo/vector-icons";
-  import { useRouter } from "expo-router";
+  import { useRouter } from "expo-router"; 
   
   const login = () => {
     const [email, setEmail] = useState("");
@@ -30,16 +30,8 @@ import {
           console.log(response);
           const token = response.data.token;
           AsyncStorage.setItem("auth",token);
-          Alert.alert(
-            "Login successful",
-            "You have been logged in Successfully"
-          );
           router.replace("/(tabs)/profile")
       }).catch((error) => {
-        Alert.alert(
-          "Error",
-          "Invalid username/password"
-        );
         console.log("registration failed", error);
       });
     };

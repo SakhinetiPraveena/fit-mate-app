@@ -30,24 +30,45 @@ mongoose
   app.listen(port, () => {
     console.log("Server is running on");
   });
-
-//endpoint to register a user to the backend
-app.post("/register", async (req, res) => {
+//endpoint to check if registration  email already esits
+app.post("/checkEmail", async (req, res) => {
   try {
-    const { name, email, password } = req.body;
-
-    //check if the email is already registered
+    const { email } = req.body;
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       console.log("Email already registered");
       return res.status(400).json({ message: "Email already registered" });
     }
+    else{
+      return res.status(200).json({ message: "Email not already registered" });
+    }
+  } catch (error) {
+    console.log("Error checking email of the user", error);
+    res.status(500).json({ message: "Checking email failed" });
+  }
+});
+//endpoint to register a user to the backend
+app.post("/register", async (req, res) => {
+  try {
+    const { name, email, password,gender,goal,age,height,weight } = req.body;
+
+    //check if the email is already registered
+    // const existingUser = await User.findOne({ email });
+    // if (existingUser) {
+    //   console.log("Email already registered");
+    //   return res.status(400).json({ message: "Email already registered" });
+    // }
 
     //create a new User
     const newUser = new User({
       name,
       email,
       password,
+      gender, 
+      goal,
+      age,
+      height,
+      weight
     });
 
     //generate the verification token
@@ -143,5 +164,22 @@ app.post("/login", async (req, res) => {
     res.status(200).json({ token });
   } catch (error) {
     res.status(500).json({ message: "login failed" });
+  }
+});
+
+//fetch users data
+app.get("/users/:userId", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(500).json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ user });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching the user details" });
   }
 });
