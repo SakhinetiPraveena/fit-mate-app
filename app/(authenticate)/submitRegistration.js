@@ -21,6 +21,8 @@ const submitRegistration = () => {
     const [height, setHeight] = useState("");
     const [weight, setWeight] = useState("");
     const [age, setAge] = useState("");
+    const [bio,setBio] = useState("");
+
     const { name, email, password, gender, goal } = useLocalSearchParams();
     const handleRegister = () => {
         // console.log(name,email,password,gender,goal,age,height,weight);
@@ -33,6 +35,7 @@ const submitRegistration = () => {
           age: age, 
           height: height,
           weight: weight,
+          bio: bio,
         };
         // send a POST  request to the backend API to register the user
         axios
@@ -46,6 +49,7 @@ const submitRegistration = () => {
             setAge("");
             setHeight("");
             setWeight("");
+            setBio("");
             router.replace("/login")
           })
           .catch((error) => {
@@ -55,9 +59,6 @@ const submitRegistration = () => {
             );
             console.log("registration failed", error);
           });
-        // setName("");
-        // setEmail(""); 
-        // setPassword("");
       };
     return (
         <KeyboardAvoidingView>
@@ -147,6 +148,32 @@ const submitRegistration = () => {
                     />
                 </View>
 
+                <Text style={{ fontSize: 16, fontWeight: "500", marginTop: 30 }}>Bio:</Text>
+                <View
+                    style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 5,
+                        backgroundColor: "#72A6DB",
+                        paddingVertical: 5,
+                        borderRadius: 5,
+                        marginTop: 10,
+                    }}
+                >
+                    <View style={{ marginLeft: 20 }}></View>
+                    <TextInput
+                        value={bio}
+                        onChangeText={(text) => setBio(text)}
+                        placeholder="Enter your bio"
+                        placeholderTextColor={"white"}
+                        style={{
+                            color: "white",
+                            marginVertical: 10,
+                            width: 300,
+                            fontSize: height ? 17 : 17,
+                        }}
+                    />
+                </View>
 
                 <View style={{ marginTop: 50 }} />
 

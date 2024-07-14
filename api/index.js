@@ -11,12 +11,15 @@ const cors = require("cors");
 app.use(cors());
 
 const http = require("http").createServer(app);
+const io = require("socket.io")(http);
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
 const jwt = require("jsonwebtoken");
 const User = require("./models/user");
+const Chat = require("./models/message");
 
 mongoose
   .connect("mongodb+srv://sakhinetipraveena:sakhinetipraveena@cluster0.qwr8rbb.mongodb.net/")
@@ -24,7 +27,7 @@ mongoose
     console.log("Connected to MongoDB");
   })
   .catch((error) => {
-    console.log("Error connecting to MongoDB");
+    console.log("Error connecting to MongoDB"); 
   });
 
   app.listen(port, () => {
@@ -50,7 +53,7 @@ app.post("/checkEmail", async (req, res) => {
 //endpoint to register a user to the backend
 app.post("/register", async (req, res) => {
   try {
-    const { name, email, password,gender,goal,age,height,weight } = req.body;
+    const { name, email, password,gender,goal,age,height,weight,bio} = req.body;
 
     //check if the email is already registered
     // const existingUser = await User.findOne({ email });
@@ -68,7 +71,8 @@ app.post("/register", async (req, res) => {
       goal,
       age,
       height,
-      weight
+      weight,
+      bio
     });
 
     //generate the verification token
@@ -183,3 +187,157 @@ app.get("/users/:userId", async (req, res) => {
     res.status(500).json({ message: "Error fetching the user details" });
   }
 });
+
+//endpoint to fetch all the profiles for a particular user
+app.get("/profiles", async (req, res) => {
+  const { userId,gender} = req.query;
+
+  try {
+    // let filter = { gender: gender === "male" ? "male" : "female" }; // For gender filtering
+    let filter = {};
+    const currentUser = await User.findById(userId)
+      .populate("following", "_id");
+
+    // Extract IDs of friends
+    const friendIds = currentUser.following.map((friend) => friend._id);
+
+    const profiles = await User.find(filter)
+      .where("_id")
+      .nin([userId, ...friendIds]);
+
+    return res.status(200).json({ profiles });
+  } catch (error) {
+    return res.status(500).json({ message: "Error fetching profiles", error });
+  }
+});
+
+//endpoint to follow a user
+app.post("/follow", async (req, res) => {
+  const { currentUserId, selectedUserId } = req.body;
+
+  try {
+    //update the recepient's friendRequestsArray!
+    await User.findByIdAndUpdate(selectedUserId, {
+      $push: { followers: currentUserId },
+    });
+    //update the sender's sentFriendRequests array
+    await User.findByIdAndUpdate(currentUserId, {
+      $push: { following: selectedUserId },
+    });
+
+    res.sendStatus(200);
+  } catch (error) {
+    res.sendStatus(500);
+  }
+});
+
+//endpoint to fetch user followers
+app.get("/users/:userId/followers", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const followerIds = user.followers;
+
+    const followers = await User.find({ _id: { $in: followerIds } });
+
+    res.status(200).json({ followers });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving the matches", error });
+  }
+});
+
+//endpoint to fetch user following
+app.get("/users/:userId/following", async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    const followingIds = user.following;
+
+    const following = await User.find({ _id: { $in: followingIds } });
+
+    res.status(200).json({ following });
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving the matches", error });
+  }
+});
+
+//Socket IO connection
+io.on("connection", (socket) => {
+  console.log("a user is connected");
+
+  socket.on("sendMessage", async (data) => {
+    try {
+      const { senderId, receiverId, message } = data;
+
+      console.log("data", data);
+
+      const newMessage = new Chat({ senderId, receiverId, message });
+      await newMessage.save();
+
+      //emit the message to the receiver
+      io.to(receiverId).emit("receiveMessage", newMessage);
+    } catch (error) {
+      console.log("Error handling the messages");
+    }
+    socket.on("disconnet", () => {
+      console.log("user disconnected");
+    });
+  });
+});
+
+http.listen(8000, () => {
+  console.log("Socket.IO server running on port 8000");
+});
+
+app.get("/messages", async (req, res) => {
+  try {
+    const { senderId, receiverId } = req.query;
+
+    console.log(senderId);
+    console.log(receiverId);
+
+    const messages = await Chat.find({
+      $or: [
+        { senderId: senderId, receiverId: receiverId },
+        { senderId: receiverId, receiverId: senderId },
+      ],
+    }).populate("senderId", "_id name");
+
+    res.status(200).json(messages);
+  } catch (error) {
+    res.status(500).json({ message: "Error in getting messages", error });
+  }
+});
+
+
+//endpoint to delete the messages;
+
+app.post("/delete",async(req,res) => {
+    try{
+        const {messages} = req.body;
+
+        if(!Array.isArray(messages) || messages.length == 0){
+            return res.status(400).json({message:"Invalid request body"})
+        };
+
+        for(const messageId of messages){
+            await Chat.findByIdAndDelete(messageId);
+        }
+
+        res.status(200).json({message:"Messages delted successfully!"})
+    } catch(error){
+        res.status(500).json({message:"Internal server error",error})
+    }
+})

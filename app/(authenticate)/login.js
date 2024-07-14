@@ -21,6 +21,21 @@ import {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const router = useRouter();
+
+    useEffect(() => {
+      const checkLoginStatus = async () => {
+          try{
+              const token = await AsyncStorage.getItem("auth");
+              if(token){
+                  router.replace("/(tabs)/home") 
+              }
+          } catch(error){
+              console.log("Error",error)
+          } 
+      } 
+      checkLoginStatus()
+    },[])
+
     const handleLogin = () => {
       const user = {
         email: email,
@@ -30,7 +45,7 @@ import {
           console.log(response);
           const token = response.data.token;
           AsyncStorage.setItem("auth",token);
-          router.replace("/(tabs)/profile")
+          router.replace("/(tabs)/home")
       }).catch((error) => {
         console.log("registration failed", error);
       });

@@ -1,21 +1,20 @@
 import { Tabs } from "expo-router";
-import { Feather } from "@expo/vector-icons";
 import { Ionicons } from "@expo/vector-icons";
-import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialIcons } from '@expo/vector-icons';
 
 export default function Layout() {
   return (
     <Tabs>
       <Tabs.Screen
-        name="profile"
+        name="home"
         options={{
-          title: "Profiles",
+          title: "",
           headerShown: false,
           tabBarIcon: ({ focused }) =>
             focused ? (
-              <Feather name="eye" size={24} color="black" />
+              <MaterialIcons name="home" size={32} color="black" />
             ) : (
-              <Feather name="eye" size={24} color="gray" />
+              <MaterialIcons name="home" size={24} color="grey" />
             ),
         }}
       />
@@ -23,21 +22,13 @@ export default function Layout() {
       <Tabs.Screen
         name="chat"
         options={{
-          title: "Chat",
+          title: "",
           headerShown: false,
           tabBarIcon: ({ focused }) =>
             focused ? (
-              <Ionicons
-                name="chatbubble-ellipses-outline"
-                size={24}
-                color="black"
-              />
+              <Ionicons name="chatbubble-ellipses" size={32} color="black" />
             ) : (
-              <Ionicons
-                name="chatbubble-ellipses-outline"
-                size={24}
-                color="gray"
-              />
+              <Ionicons name="chatbubble-ellipses" size={24} color="grey" />
             ),
         }}
       />
@@ -45,21 +36,13 @@ export default function Layout() {
       <Tabs.Screen
         name="bio"
         options={{
-          title: "Account",
+          title: "",
           headerShown: false,
           tabBarIcon: ({ focused }) =>
             focused ? (
-              <MaterialCommunityIcons
-                name="guy-fawkes-mask"
-                size={24}
-                color="black"
-              />
+              <MaterialIcons name="person" size={32} color="black" />
             ) : (
-              <MaterialCommunityIcons
-                name="guy-fawkes-mask"
-                size={24}
-                color="gray"
-              />
+              <MaterialIcons name="person" size={24} color="grey" />
             ),
         }}
       />
