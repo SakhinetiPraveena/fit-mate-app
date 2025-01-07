@@ -1,0 +1,12 @@
+.main-div{
+    display: flex;
+    margin-top: 3%;
+}
+.text-div{
+    width: 27%;
+    margin-left: 2%;
+    margin-right: 2%;
+}
+p{
+    font-size: 1.3em;
+}

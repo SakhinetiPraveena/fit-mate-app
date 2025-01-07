@@ -62,8 +62,8 @@ const UserChat = ({ item, userId }) => {
       <View>
         <Text
           style={{
-            fontWeight: "500",
-            color: "#DE3163",
+            fontWeight: "300",
+            // color: "#DE3163",
             fontSize: 15,
             fontFamily: "Kailasa",
           }}
@@ -76,6 +76,7 @@ const UserChat = ({ item, userId }) => {
             fontWeight: "500",
             marginTop: 6,
             fontFamily: "Lao Sangam MN",
+            color:"grey"
           }}
         >
           {lastMessage ? lastMessage?.message : `Start Chat with ${item?.name}`}

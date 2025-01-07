@@ -1,4 +1,4 @@
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet,ScrollView, Text, View } from "react-native";
 import React, { useState, useEffect, useCallback } from "react";
 import { jwtDecode } from "jwt-decode";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -75,6 +75,7 @@ const index = () => {
   console.log("followers", followers)
   console.log("following", following)
   return (
+    <ScrollView>
     <View style={{ backgroundColor: "white", flex: 1, padding: 10 }}>
     <View
         style={{
@@ -95,6 +96,7 @@ const index = () => {
       ))}
     </View>
     </View>
+    </ScrollView>
   );
 };
 
